@@ -1,0 +1,56 @@
+.. link:
+.. description:
+.. tags:
+.. date: 2013/07/15 15:45:14
+.. title: 用nikola在github上搭建个人博客
+.. slug: yong-nikolazai-githubshang-da-jian-ge-ren-bo-ke
+
+==============================
+用nikola在github上搭建个人博客
+==============================
+
+在github上的操作
+----------------
+与GitHub建立好链接之后，就可以方便的使用它提供的Pages服务，GitHub Pages分两种，一种是你的GitHub用户名建立的 ``username.github.io`` 这样的用户&组织页（站），另一种是依附项目的pages。
+
+想建立个人博客是用的第一种，形如 ``iefan.github.io`` 这样的可访问的站，每个用户名下面只能建立一个。
+
+普通的项目也有github pages，但是只能用其分支 gh-pages 进行更新操作。要通过如 ``iefan.github.io/blog`` 这样的方式进行访问。
+
+安装 nikola
+------------
+关于静态博客，在github是推荐的是 ``jekyll`` ，是用ruby写的，个人在windows7上安装好ruby环境后，试了一下，没有安装成功 ``jekyll`` 。之后又试了python下的 ``hyde`` ，这个倒是不错，只是在post中填入中文后，在编绎时有错误报出，于是也没再想继续折腾。也试了 ``Pelican`` ，但其生成的是make文件，在windows下面处理make文件需要安装一堆东西，于是又在寻找几种之后，选择了 ``nikola`` 。
+
+需要静态博客，个人需要是：不要太折腾，要自由写作，同时能够在windows和linux下都能简单布署本地环境。综合以上 ``nikola`` 满足要求。
+
+安装 ``nikola`` 也比较简单， ``pip install nikola`` 即可，期间会由于网络问题在安装某些依赖时会报错，自己只需要根据提示单独去网上寻找相应二进制包下载安装即可。在ubuntu下， ``sudo aptitude install nikola`` 就可以安装成功。
+
+``nikoca`` 简单用法
+-------------------
+1. 创建一个网站。
+::
+
+    mkdir myblog
+    cd myblog
+    nikola init
+
+这样就可以创建一个空的静态网站了。
+
+2. 创建一篇新文章
+::
+
+    nikola new_post
+
+随后按提示填入需要写的文章名称， ``nikola`` 会自动在网站的 ``post`` 目录下生成一个text文件，名称是根据输入的名称自动转化的英文。然后自己用熟悉的编辑器打开文章开始书写。
+
+3. 编绎运行
+在写作完成后，在命令行输入以下命令：
+::
+
+    nikola build
+    nikola serve
+
+即可打开浏览器输入 ``localhost:8000/`` 就可看到默认风格的静态网站。
+
+4. ``nikola`` 主题安装
+如果对 ``nikola`` 的主题不满意，则可以在 ``nikola`` 的官方网站 `nikolatheme <http://themes.nikola.ralsina.com.ar/>`_ 下载主题，在自己的静态网站目录中新建 ``themes`` 文件夹，将下载的主题解压至 ``themes`` 文件夹中，然后在 ``conf.py`` 中修改 ``theme`` ，将其值指定为新的主题文件夹名字，重新 ``build`` 即可。
