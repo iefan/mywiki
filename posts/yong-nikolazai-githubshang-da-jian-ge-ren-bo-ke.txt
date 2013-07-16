@@ -1,6 +1,6 @@
 .. link:
 .. description:
-.. tags:
+.. tags: nikola, github
 .. date: 2013/07/15 15:45:14
 .. title: 用nikola在github上搭建个人博客
 .. slug: yong-nikolazai-githubshang-da-jian-ge-ren-bo-ke
@@ -11,11 +11,15 @@
 
 在github上的操作
 ----------------
-与GitHub建立好链接之后，就可以方便的使用它提供的Pages服务，GitHub Pages分两种，一种是你的GitHub用户名建立的 ``username.github.io`` 这样的用户&组织页（站），另一种是依附项目的pages。
+
+与GitHub建立好链接之后，就可以方便的使用它提供的Pages服务，GitHub Pages分两种，一种是你的GitHub用户名建立的 ``username.github.io`` 这样的用户/组织页，另一种是依附项目的pages。
+
+.. TEASER_END
 
 想建立个人博客是用的第一种，形如 ``iefan.github.io`` 这样的可访问的站，每个用户名下面只能建立一个。
 
 普通的项目也有github pages，但是只能用其分支 gh-pages 进行更新操作。要通过如 ``iefan.github.io/blog`` 这样的方式进行访问。
+
 
 安装 nikola
 ------------

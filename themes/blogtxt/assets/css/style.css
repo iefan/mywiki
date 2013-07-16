@@ -7,7 +7,9 @@ AUTHOR: Scott Allan Wallick
 AUTHOR URI: http://scottwallick.com/
 TAGS: variable width, fixed width, variable columns, two columns, three columns, widgets, theme options, options page, white, gray, typography, microformats, hatom, hcard
 */
-body h1,body h2,body h3{font-family:garamond,georgia,times,serif;font-weight:400;}
+body {margin:0; padding:0;background-color: #f5f5d5 ; font-family: Georgia, serif; letter-spacing: -0.01em; word-spacing:0.2em; color:#111111; width:98%;}
+#wrapper p{line-height:160%;}
+body h1,body h2,body h3{font-family:Tahoma, Verdana, sTHeiTi, simsun, sans-serif;font-weight:400;}
 a,a:link{outline:none;text-decoration:none;}
 div#header a,div#header a:link{color:#0d1117;}
 div.hfeed a,div.hfeed a:link,div.entry-content ul.xoxo li.hentry span a,div.entry-content ul.xoxo li.hentry span a:link{border-bottom:1px solid #9aa1ae;color:#34425b;}
