@@ -9,7 +9,7 @@ import time
 
 # Data about this site
 BLOG_AUTHOR = "iefan"
-BLOG_TITLE = "小小驿站"
+BLOG_TITLE = "I Enjoy Finding And Natural"
 # This is the main URL for your site. It will be used
 # in a prominent link
 SITE_URL = "http://iefan.github.io"
@@ -179,7 +179,9 @@ post_compilers = {
 # If you don't use an absolute path, it will be considered as relative
 # to the location of conf.py
 # OUTPUT_FOLDER = 'output'
-OUTPUT_FOLDER = r'D:/workdb/iefan.github.io'
+# OUTPUT_FOLDER = r'D:/workdb/iefan.github.io'
+OUTPUT_FOLDER = r'/home/iefan/work/iefan.github.io'
+
 
 # where the "cache" of partial generated content should be located
 # default: 'cache'
