@@ -20,7 +20,9 @@ table.borderless td, table.borderless th {
 
 .first {
     /* Override more specific margin styles with "! important". */
-    margin-top: 0 ! important }
+    margin-top: 0 ! important;
+    text-indent:-0.2em ! important;
+}
 
 .last, .with-subtitle {
     margin-bottom: 0 ! important }

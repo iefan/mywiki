@@ -7,6 +7,7 @@ AUTHOR: Scott Allan Wallick
 AUTHOR URI: http://scottwallick.com/
 TAGS: variable width, fixed width, variable columns, two columns, three columns, widgets, theme options, options page, white, gray, typography, microformats, hatom, hcard
 */
+.post_title{font-size:24px;margin:20px 0 0 0;text-shadow:2px 2px 5px #ccc;}.post_title a{text-decoration:none;}.post_title .icon{background-position:100px 100px;}
 body {margin:0; padding:0;background-color: #f5f5d5 ; font-family: Georgia, serif; letter-spacing: -0.01em; word-spacing:0.2em; color:#111111; width:98%;}
 #wrapper p{line-height:160%;}
 body h1,body h2,body h3{font-family:Tahoma, Verdana, sTHeiTi, simsun, sans-serif;font-weight:400;}
@@ -32,7 +33,7 @@ div#footer{color:#9aa1ae;font-size:0.9em;padding:6em 0 0;}
 div#globalnav,div.access,div#footer span#theme-link span.additional-name,div#footer span#theme-link span.family-name{display:none;}
 div#header a{text-decoration:none;}
 div#header div#blog-description,div#header div.archive-description{font-size:1.1em;line-height:133%;}
-div#header h1#blog-title{border-bottom:0.1em solid #ccd0d6;font-weight:normal;font-size:4em;line-height:140%;letter-spacing:1px;margin:-0.8em 0 0.4em 0;text-transform:uppercase;}
+div#header h1#blog-title{border-bottom:0.1em solid #ccd0d6;font-weight:normal;font-size:2em;line-height:140%;letter-spacing:1px;margin:-0.8em 0 0.4em 0;text-transform:capitalize;text-shadow:2px 2px 5px #ccc;}
 div#wrapper .important{background:#f5f5dc url(images/important.png) no-repeat 0.5em center;border-bottom:1px solid #d0d0bb;border-top:1px solid #d0d0bb;padding:0.3em 0.5em 0.3em 2.3em;}
 div#wrapper div.entry-content .download{background:url(images/file-download.png) no-repeat center left;}
 div#wrapper div.entry-content .html{background:url(images/file-html.png) no-repeat center left;}
@@ -71,7 +72,7 @@ div.entry-content h6{font-size:1.2em;margin:1.5em 0 -0.5em;}
 div.entry-content img.center,div.entry-content img.alignright,div.entry-content img.alignleft{border:1px solid #9aa1ae;}
 div.entry-content ins,div.comments ol.commentlist ins{background:#f5f5dc;}
 div.entry-content ol ol{list-style:lower-alpha;}
-div.entry-content p,div.formcontainer p{margin:1em 0; font-size:20px}
+div.entry-content p,div.formcontainer p{margin:1em 0; font-size:16px; text-indent:2em;}
 body.attachment h3.entry-title{margin:-1.5em 0 0.5em 0;}
 div.entry-content div.entry-attachment{margin:-0.5em 0 1em;}
 div.entry-content div.entry-caption{margin-bottom:2em;}
@@ -109,6 +110,7 @@ div.formcontainer textarea#comment{height:12em;margin:0 0 0.5em;overflow:auto;wi
 div.formcontainer,p#mustlogin{margin:0 0 1em 1.5em;}
 div.hentry div.archive-meta{font-style:italic;margin:0.5em 0 2em 2em;}
 div.hentry div.entry-meta{background:#f6f7f8;border-bottom:1px solid #ccd0d6;border-top:1px solid #ccd0d6;color:#677284;font-size:0.9em;margin:1em 0 5em;padding:0.2em 0.5em;text-align:center;clear:both;}
+.entry-meta {margin:1em 0;}
 div.hentry div.entry-meta span.meta-sep{padding:0 0 0 0.3em;}
 div.hfeed .entry-title{font-size:1.6em;font-weight:400;line-height:133%;margin:0 0 -0.3em;text-transform:uppercase;}
 div.hfeed .page-title{color:#4d5663;font-size:1.7em;font-weight:400;line-height:133%;margin:2em 0 0;}

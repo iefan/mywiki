@@ -1,0 +1,207 @@
+<p>本文主要引用了 <a class="reference external" href="http://eidolon.iteye.com/blog/900945">python的支付宝实现一文</a> 。</p>
+<p>支付宝接口的原理：</p>
+<ol class="arabic simple">
+<li>在商家页面产生一个包含付款细节表单，该表单将提交到支付宝指定的URL（即表单的Action为支付宝指定的URL，可以是POST方法，也可以是GET方法）。</li>
+<li>异步回调，用户在支付宝付款成功后，支付宝回调商家指定的URL，并回传支付相信的信息（使用POST方法）。</li>
+<li>跳转回调，用户在支付宝付款成功后，支付宝页面会将用户带回到商家指定的URL，并回传支付成功的相关信息（使用GET方法）。</li>
+</ol>
+<!-- TEASER_END -->
+<p>实际运行中，异步回调要早于跳转回调。</p>
+<p>在这三步通信过程当中，都要对GET、POST数据进行MD5摘要，摘要时，必须包含支付宝为商家生成的key。在产生表单时，需要对数据和key一起进行MD5摘要，并将结果附加在提交的数据中。支付接口实现在收到数据时，即上面提到的第2点及第3点，同样要对数据进行MD5接要，以此来验证数据是否正确、是否来自支付宝。除了通过MD5加KEY来确保数据的真实有效，支付宝还提供有另外一个URL，允许商家网站在收到回调后，通过此URL验证收到的数据是否真实有效。</p>
+<p>要想成功与支付宝集成，有两点至关重要：1、提供必要的数据项；2、做MD5摘要时，数据项必须排序（升序）后进行，支付宝在处理时也按照此顺序处理，这样才能获得同样的MD5摘要。</p>
+<p>该模块的使用方法:</p>
+<ol class="arabic">
+<li><p class="first">在处理支付的模块中，引入alipay模块，并创建alipay类的实例：</p>
+<pre class="code python literal-block">
+<span class="kn">import</span> <span class="nn">alipay</span>
+<span class="c">#替换其中相关内容即可。</span>
+<span class="n">alipayTool</span><span class="o">=</span><span class="n">alipay</span><span class="o">.</span><span class="n">alipay</span><span class="p">(</span>
+                <span class="n">partner</span><span class="o">=</span><span class="s">&quot;支付宝身份ID&quot;</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="s">&quot;支付宝生成的key&quot;</span><span class="p">,</span>
+                <span class="n">sellermail</span><span class="o">=</span><span class="s">&quot;商家支付宝帐号（邮箱）&quot;</span><span class="p">,</span>
+                <span class="n">notifyurl</span><span class="o">=</span><span class="s">&quot;异步回调的URL&quot;</span><span class="p">,</span>
+                <span class="n">returnurl</span><span class="o">=</span><span class="s">&quot;跳转回的URL&quot;</span><span class="p">,</span>
+                <span class="n">showurl</span><span class="o">=</span><span class="s">&quot;显示网站商品的URL&quot;</span>
+                <span class="p">)</span>
+</pre>
+</li>
+<li><p class="first">在支付页面（即用户点击支付按钮即转到支付宝付款的页面），我们需要在这个页面产生一个隐藏的表单，用来提交订单信息：</p>
+<pre class="code python literal-block">
+<span class="c">#支付信息，订单号必须唯一。</span>
+<span class="c">#以下包含的内容替换为实际的内容。</span>
+<span class="n">params</span><span class="o">=</span><span class="p">{</span>
+      <span class="s">'out_trade_no'</span><span class="p">:</span><span class="o">&lt;</span><span class="err">订单号</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="s">'subject'</span>     <span class="p">:</span><span class="o">&lt;</span><span class="err">订单</span><span class="n">subject</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="s">'body'</span>        <span class="p">:</span><span class="o">&lt;</span><span class="err">订单说明</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="s">'total_fee'</span>   <span class="p">:</span><span class="o">&lt;</span><span class="err">订单总额</span><span class="o">&gt;</span>
+<span class="p">}</span>
+<span class="n">payhtml</span><span class="o">=</span><span class="n">alipayTool</span><span class="o">.</span><span class="n">createPayForm</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="c">#将payhtml写到页面，这是个包含有提交按钮的表单</span>
+</pre>
+</li>
+<li><p class="first">异步回调处理：</p>
+<pre class="code python literal-block">
+<span class="c"># f 为包含POST过来的数据python字典，即名-值对。</span>
+<span class="c"># verify 是否回调支付宝确认数据是否真实有效</span>
+<span class="c"># rlt为处理的结果，为success或fail</span>
+
+<span class="n">rlt</span><span class="o">=</span><span class="n">alipayTool</span><span class="o">.</span><span class="n">notifiyCall</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">verify</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c">#依据支付宝的要求，此URL返回的值为success或fail</span>
+<span class="c">#因此，当rlt为success时（即支付成功），做相应的处理</span>
+<span class="c">#然后，直接将rlt写到输出流。</span>
+
+<span class="k">if</span> <span class="n">rlt</span><span class="o">==</span><span class="s">'success'</span><span class="p">:</span>
+     <span class="n">paySuccess</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'out_trade_no'</span><span class="p">])</span>
+
+<span class="k">return</span> <span class="n">rlt</span>
+</pre>
+</li>
+<li><p class="first">跳转回调处理：</p>
+<pre class="code python literal-block">
+<span class="c">#注意，与异步回处理相同，在跳转回调的处理上，仍是调用notifiyCall函数</span>
+<span class="c">#并且参数与返回完全一样。</span>
+
+<span class="n">rlt</span><span class="o">=</span><span class="n">alipayTool</span><span class="o">.</span><span class="n">notifiyCall</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">verify</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c">#只是验证后的处理不同，这里需要给用户显示一个页面。</span>
+<span class="k">if</span> <span class="n">rlt</span><span class="o">==</span><span class="s">'success'</span><span class="p">:</span>
+   <span class="n">paySuccess</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'out_trade_no'</span><span class="p">])</span>
+   <span class="c">#显示支付成功的页面</span>
+
+<span class="k">else</span><span class="p">:</span>
+   <span class="c">#显示未能成功支付的页面</span>
+</pre>
+</li>
+<li><p class="first">附alipay.py的文件</p>
+<pre class="code python literal-block">
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">'''
+Created on 2011-1-5
+&#64;author: codeback&#64;gmail.com
+'''</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+
+<span class="n">verfyURL</span><span class="o">=</span><span class="p">{</span>
+    <span class="c"># &quot;https&quot;:&quot;https://www.alipay.com/cooperate/gateway.do?service=notify_verify&quot;,</span>
+    <span class="c"># &quot;http&quot; :&quot;http://notify.alipay.com/trade/notify_query.do?&quot;,</span>
+    <span class="s">&quot;https&quot;</span><span class="p">:</span> <span class="s">&quot;https://mapi.alipay.com/gateway.do?service=notify_verify&amp;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;http&quot;</span> <span class="p">:</span> <span class="s">&quot;http://notify.alipay.com/trade/notify_query.do?&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="c"># gateway=&quot;https://www.alipay.com/cooperate/gateway.do&quot;</span>
+<span class="c"># new gateway</span>
+<span class="n">gateway</span><span class="o">=</span><span class="s">&quot;https://mapi.alipay.com/gateway.do?&quot;</span>
+
+<span class="k">class</span> <span class="nc">alipay</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">partner</span><span class="o">=</span><span class="s">&quot;您的淘宝身份&quot;</span><span class="p">,</span>
+                 <span class="n">key</span><span class="o">=</span><span class="s">&quot;您的淘宝Key&quot;</span><span class="p">,</span>
+                 <span class="n">sellermail</span><span class="o">=</span><span class="s">&quot;卖家邮箱&quot;</span><span class="p">,</span>
+                 <span class="n">notifyurl</span><span class="o">=</span><span class="s">&quot;异步通知回调URL&quot;</span><span class="p">,</span>
+                 <span class="n">returnurl</span><span class="o">=</span><span class="s">&quot;跳转回调URL&quot;</span><span class="p">,</span>
+                 <span class="n">showurl</span><span class="o">=</span><span class="s">&quot;产品页面&quot;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">=</span><span class="p">{</span>
+              <span class="s">'partner'</span>         <span class="p">:</span>   <span class="n">partner</span><span class="p">,</span>
+              <span class="s">'service'</span>         <span class="p">:</span>   <span class="s">&quot;create_direct_pay_by_user&quot;</span><span class="p">,</span>
+              <span class="s">'payment_type'</span>    <span class="p">:</span>   <span class="s">&quot;1&quot;</span><span class="p">,</span>
+              <span class="s">'seller_email'</span>    <span class="p">:</span>   <span class="n">sellermail</span><span class="p">,</span>
+              <span class="s">'notify_url'</span>      <span class="p">:</span>   <span class="n">notifyurl</span><span class="p">,</span>
+              <span class="s">'return_url'</span>      <span class="p">:</span>   <span class="n">returnurl</span><span class="p">,</span>
+              <span class="s">'show_url'</span>        <span class="p">:</span>   <span class="n">showurl</span><span class="p">,</span>
+              <span class="s">'_input_charset'</span>  <span class="p">:</span>   <span class="s">&quot;UTF-8&quot;</span><span class="p">,</span>
+              <span class="s">'sign_type'</span>       <span class="p">:</span>   <span class="s">&quot;MD5&quot;</span><span class="p">,</span>
+              <span class="c">#其他参数，如果有默认值定义在下面：</span>
+              <span class="s">'paymethod'</span>       <span class="p">:</span>   <span class="s">&quot;&quot;</span><span class="p">,</span>
+              <span class="s">'mainname'</span>        <span class="p">:</span>   <span class="s">&quot;&quot;</span><span class="p">,</span>
+              <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">populateURLStr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">params</span><span class="p">):</span>
+        <span class="n">ks</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">rlt</span><span class="o">=</span><span class="s">''</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">==</span><span class="mi">0</span> \
+                <span class="ow">or</span> <span class="n">k</span><span class="o">==</span><span class="s">&quot;sign&quot;</span> <span class="ow">or</span> <span class="n">k</span><span class="o">==</span><span class="s">&quot;sign_type&quot;</span> <span class="ow">or</span> <span class="n">k</span><span class="o">==</span><span class="s">&quot;key&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">rlt</span><span class="o">=</span><span class="n">rlt</span><span class="o">+</span><span class="s">&quot;&amp;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="k">print</span> <span class="s">&quot;URL:&quot;</span><span class="o">+</span><span class="n">rlt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">rlt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+
+    <span class="k">def</span> <span class="nf">buildSign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">params</span><span class="p">):</span>
+        <span class="n">sign</span><span class="o">=</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populateURLStr</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;md5 sign is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sign</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">sign</span>
+
+
+    <span class="sd">'''
+      校验支付宝返回的参数，交易成功的通知回调.
+      校验分为两个步骤：检查签名是否正确、访问支付宝确认当前数据是由支付宝返回。
+
+      params为支付宝传回的数据。
+    '''</span>
+    <span class="k">def</span> <span class="nf">notifiyCall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">verify</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">transport</span><span class="o">=</span><span class="s">&quot;http&quot;</span><span class="p">):</span>
+        <span class="n">sign</span><span class="o">=</span><span class="bp">None</span>
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">'sign'</span><span class="p">):</span>
+            <span class="n">sign</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s">'sign'</span><span class="p">]</span>
+        <span class="n">locSign</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buildSign</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sign</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">locSign</span><span class="o">!=</span><span class="n">sign</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;sign error.&quot;</span>
+            <span class="k">return</span> <span class="s">&quot;fail&quot;</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s">'trade_status'</span><span class="p">]</span><span class="o">!=</span><span class="s">'TRADE_FINISHED'</span> <span class="ow">and</span>  <span class="n">params</span><span class="p">[</span><span class="s">'trade_status'</span><span class="p">]</span><span class="o">!=</span><span class="s">'TRADE_SUCCESS'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;fail&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">verify</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;success&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Verify the request is call by alipay.com....&quot;</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">verfyURL</span><span class="p">[</span><span class="n">transport</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;&amp;partner=</span><span class="si">%s</span><span class="s">&amp;notify_id=</span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s">'partner'</span><span class="p">],</span><span class="n">params</span><span class="p">[</span><span class="s">'notify_id'</span><span class="p">])</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">html</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="k">print</span> <span class="s">&quot;aliypay.com return: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">html</span>
+            <span class="k">if</span> <span class="n">html</span><span class="o">==</span><span class="s">'true'</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&quot;success&quot;</span>
+
+            <span class="k">return</span> <span class="s">&quot;fail&quot;</span>
+
+    <span class="sd">'''
+        生成提交到支付宝的表单，用户通过此表单将订单信息提交到支付宝。
+
+        由params参数提供订单信息，必须包含以下几项内容：
+        out_trade_no：订单号
+        subject     :订单名称、或商品名称
+        body        :订单备注、描述
+        total_fee   :总额
+    '''</span>
+    <span class="k">def</span> <span class="nf">createPayForm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;确认，支付宝付款&quot;</span><span class="p">):</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">)</span>
+        <span class="n">sign</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buildSign</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="s">'sign'</span><span class="p">]</span><span class="o">=</span><span class="n">sign</span>
+
+        <span class="n">ele</span><span class="o">=</span><span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">nm</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+
+            <span class="k">print</span> <span class="s">&quot;key in params : </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="n">nm</span>
+
+            <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">nm</span><span class="p">])</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">nm</span><span class="o">==</span><span class="s">'_input_charset'</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ele</span> <span class="o">=</span> <span class="n">ele</span> <span class="o">+</span> <span class="s">&quot; &lt;input type='hidden' name='</span><span class="si">%s</span><span class="s">' value='</span><span class="si">%s</span><span class="s">' /&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nm</span><span class="p">,</span><span class="n">params</span><span class="p">[</span><span class="n">nm</span><span class="p">])</span>
+
+        <span class="n">html</span><span class="o">=</span><span class="s">'''
+            &lt;form name='alipaysubmit' action='</span><span class="si">%s</span><span class="s">?_input_charset=</span><span class="si">%s</span><span class="s">' method='</span><span class="si">%s</span><span class="s">' target='_blank'&gt;
+                </span><span class="si">%s</span><span class="s">
+                &lt;input type=&quot;submit&quot; value=&quot;</span><span class="si">%s</span><span class="s">&quot; /&gt;
+            &lt;/form&gt;
+            '''</span> <span class="o">%</span> <span class="p">(</span><span class="n">gateway</span><span class="p">,</span><span class="n">params</span><span class="p">[</span><span class="s">'_input_charset'</span><span class="p">],</span><span class="n">method</span><span class="p">,</span><span class="n">ele</span><span class="p">,</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">html</span>
+</pre>
+</li>
+</ol>

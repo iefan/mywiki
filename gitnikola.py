@@ -21,9 +21,12 @@ for f in filelist:
 
 os.chdir(curdir)
 os.system("nikola build")
-os.system("git add .")
-os.system("git status")
-os.system("git pull")
+
+os.chdir(outputdir)
+# os.system("git pull")
+# os.system("git add .")
+# os.system("git status")
+
 # os.chdir(outputdir)
 
 # os.system("nikola serve")

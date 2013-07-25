@@ -2,17 +2,16 @@
 <%inherit file="base.tmpl"/>
 <%block name="content">
     <div id="post-${post.pagenames[lang]}" class="post">
-      <h2 class="entry-title"><a href='${permalink}'>${title}</a></h2>
-        <div class="entry-content" >
-            ${post.text(lang)}
-        </div>
-        <div class="archive-meta">
-            % if link:
+      <h2  class="post_title" align="center"><a href='${permalink}'>${title}</a></h2>
+      <br/>
+        <div class="archive-meta" align="center">
+          <span class="meta-sep">|</span>
+          % if link:
                     <p><a href='${link}'>${messages[lang]["Original site"]}</a></p>
                     <span class="meta-sep">|</span>
             % endif
             ${messages[lang]["Posted"]}: ${post.date}<span class="meta-sep">|</span>
-            <span class="meta-sep">|</span>
+            <!-- <span class="meta-sep">|</span> -->
             %if len(translations) > 1:
                 %for langname in translations.keys():
                     %if langname != lang:
@@ -28,6 +27,9 @@
                 %endfor
             <span class="entry-tags">
             </span>
+        </div>
+        <div class="entry-content" >
+            ${post.text(lang)}
         </div>
     </div>
     <!-- %if disqus_forum: -->

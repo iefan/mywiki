@@ -1,0 +1,227 @@
+.. link:
+.. description:
+.. tags: python,支付宝
+.. date: 2013/07/23 16:29:52
+.. title: 支付宝python接口(引)
+.. slug: zhi-fu-bao-pythonjie-kou-yin
+
+
+本文主要引用了 `python的支付宝实现一文 <http://eidolon.iteye.com/blog/900945>`_ 。
+
+支付宝接口的原理：
+
+1. 在商家页面产生一个包含付款细节表单，该表单将提交到支付宝指定的URL（即表单的Action为支付宝指定的URL，可以是POST方法，也可以是GET方法）。
+
+#. 异步回调，用户在支付宝付款成功后，支付宝回调商家指定的URL，并回传支付相信的信息（使用POST方法）。
+
+#. 跳转回调，用户在支付宝付款成功后，支付宝页面会将用户带回到商家指定的URL，并回传支付成功的相关信息（使用GET方法）。
+
+.. TEASER_END
+
+
+实际运行中，异步回调要早于跳转回调。
+
+在这三步通信过程当中，都要对GET、POST数据进行MD5摘要，摘要时，必须包含支付宝为商家生成的key。在产生表单时，需要对数据和key一起进行MD5摘要，并将结果附加在提交的数据中。支付接口实现在收到数据时，即上面提到的第2点及第3点，同样要对数据进行MD5接要，以此来验证数据是否正确、是否来自支付宝。除了通过MD5加KEY来确保数据的真实有效，支付宝还提供有另外一个URL，允许商家网站在收到回调后，通过此URL验证收到的数据是否真实有效。
+
+要想成功与支付宝集成，有两点至关重要：1、提供必要的数据项；2、做MD5摘要时，数据项必须排序（升序）后进行，支付宝在处理时也按照此顺序处理，这样才能获得同样的MD5摘要。
+
+该模块的使用方法:
+
+1. 在处理支付的模块中，引入alipay模块，并创建alipay类的实例：
+
+   .. code-block:: python
+
+    import alipay
+    #替换其中相关内容即可。
+    alipayTool=alipay.alipay(
+                    partner="支付宝身份ID",
+                    key="支付宝生成的key",
+                    sellermail="商家支付宝帐号（邮箱）",
+                    notifyurl="异步回调的URL",
+                    returnurl="跳转回的URL",
+                    showurl="显示网站商品的URL"
+                    )
+
+#. 在支付页面（即用户点击支付按钮即转到支付宝付款的页面），我们需要在这个页面产生一个隐藏的表单，用来提交订单信息：
+
+   .. code-block:: python
+
+     #支付信息，订单号必须唯一。
+     #以下包含的内容替换为实际的内容。
+     params={
+           'out_trade_no':<订单号>,
+           'subject'     :<订单subject>,
+           'body'        :<订单说明>,
+           'total_fee'   :<订单总额>
+     }
+     payhtml=alipayTool.createPayForm(params)
+     #将payhtml写到页面，这是个包含有提交按钮的表单
+
+#. 异步回调处理：
+
+   .. code-block:: python
+
+    # f 为包含POST过来的数据python字典，即名-值对。
+    # verify 是否回调支付宝确认数据是否真实有效
+    # rlt为处理的结果，为success或fail
+
+    rlt=alipayTool.notifiyCall(f,verify=True)
+
+    #依据支付宝的要求，此URL返回的值为success或fail
+    #因此，当rlt为success时（即支付成功），做相应的处理
+    #然后，直接将rlt写到输出流。
+
+    if rlt=='success':
+         paySuccess(f['out_trade_no'])
+
+    return rlt
+
+#. 跳转回调处理：
+
+   .. code-block:: python
+
+    #注意，与异步回处理相同，在跳转回调的处理上，仍是调用notifiyCall函数
+    #并且参数与返回完全一样。
+
+    rlt=alipayTool.notifiyCall(f,verify=True)
+
+    #只是验证后的处理不同，这里需要给用户显示一个页面。
+    if rlt=='success':
+       paySuccess(f['out_trade_no'])
+       #显示支付成功的页面
+
+    else:
+       #显示未能成功支付的页面
+
+
+#. 附alipay.py的文件
+
+   .. code-block:: python
+
+    #!/usr/bin/env python
+    # -*- coding: utf-8 -*-
+    '''
+    Created on 2011-1-5
+    @author: codeback@gmail.com
+    '''
+    import hashlib
+    import urllib2
+
+    verfyURL={
+        # "https":"https://www.alipay.com/cooperate/gateway.do?service=notify_verify",
+        # "http" :"http://notify.alipay.com/trade/notify_query.do?",
+        "https": "https://mapi.alipay.com/gateway.do?service=notify_verify&",
+        "http" : "http://notify.alipay.com/trade/notify_query.do?",
+        }
+    # gateway="https://www.alipay.com/cooperate/gateway.do"
+    # new gateway
+    gateway="https://mapi.alipay.com/gateway.do?"
+
+    class alipay:
+        def __init__(self,
+                     partner="您的淘宝身份",
+                     key="您的淘宝Key",
+                     sellermail="卖家邮箱",
+                     notifyurl="异步通知回调URL",
+                     returnurl="跳转回调URL",
+                     showurl="产品页面"):
+
+                self.key=key;
+                self.conf={
+                  'partner'         :   partner,
+                  'service'         :   "create_direct_pay_by_user",
+                  'payment_type'    :   "1",
+                  'seller_email'    :   sellermail,
+                  'notify_url'      :   notifyurl,
+                  'return_url'      :   returnurl,
+                  'show_url'        :   showurl,
+                  '_input_charset'  :   "UTF-8",
+                  'sign_type'       :   "MD5",
+                  #其他参数，如果有默认值定义在下面：
+                  'paymethod'       :   "",
+                  'mainname'        :   "",
+                  }
+
+        def populateURLStr(self,params):
+            ks=params.keys()
+            ks.sort()
+            rlt=''
+            for k in ks:
+                if params[k]==None or len(params[k])==0 \
+                    or k=="sign" or k=="sign_type" or k=="key":
+                    continue
+                rlt=rlt+"&%s=%s"%(k,params[k])
+            print "URL:"+rlt[1:]
+            return rlt[1:]
+
+
+        def buildSign(self,params):
+            sign=hashlib.md5(self.populateURLStr(params)+self.key).hexdigest()
+            print "md5 sign is %s" % sign;
+            return sign
+
+
+        '''
+          校验支付宝返回的参数，交易成功的通知回调.
+          校验分为两个步骤：检查签名是否正确、访问支付宝确认当前数据是由支付宝返回。
+
+          params为支付宝传回的数据。
+        '''
+        def notifiyCall(self,params,verify=True,transport="http"):
+            sign=None
+            if params.has_key('sign'):
+                sign=params['sign']
+            locSign=self.buildSign(params)
+
+            if sign==None or locSign!=sign:
+                print "sign error."
+                return "fail"
+
+            if params['trade_status']!='TRADE_FINISHED' and  params['trade_status']!='TRADE_SUCCESS':
+                return "fail"
+
+            if not verify:
+                return "success"
+            else:
+                print "Verify the request is call by alipay.com...."
+                url = verfyURL[transport] + "&partner=%s&notify_id=%s"%(self.conf['partner'],params['notify_id'])
+                response=urllib2.urlopen(url)
+                html=response.read()
+
+                print "aliypay.com return: %s" % html
+                if html=='true':
+                    return "success"
+
+                return "fail"
+
+        '''
+            生成提交到支付宝的表单，用户通过此表单将订单信息提交到支付宝。
+
+            由params参数提供订单信息，必须包含以下几项内容：
+            out_trade_no：订单号
+            subject     :订单名称、或商品名称
+            body        :订单备注、描述
+            total_fee   :总额
+        '''
+        def createPayForm(self,params,method="POST",title="确认，支付宝付款"):
+            params.update(self.conf)
+            sign=self.buildSign(params)
+            params['sign']=sign
+
+            ele=""
+            for nm in params:
+
+                print "key in params : %s"%nm
+
+                if params[nm]==None or len(params[nm])==0 or nm=='_input_charset':
+                    continue
+                ele = ele + " <input type='hidden' name='%s' value='%s' />" % (nm,params[nm])
+
+            html='''
+                <form name='alipaysubmit' action='%s?_input_charset=%s' method='%s' target='_blank'>
+                    %s
+                    <input type="submit" value="%s" />
+                </form>
+                ''' % (gateway,params['_input_charset'],method,ele,title)
+
+            return html
