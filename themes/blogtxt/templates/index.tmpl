@@ -3,7 +3,7 @@
 <%block name="content">
     % for post in posts:
         <div class="post">
-            <h2 class="post_title"><a href="${post.permalink(lang)}">${post.title(lang)}</a></h2>
+            <h2 class="post_title"><a   href="${post.permalink(lang)}">${post.title(lang)}</a></h2>
             <div class="entry-meta">
                 <span class="meta-sep">|</span>
                 <span class="entry-date">${messages[lang]["Posted"]}: ${post.date}</span>
@@ -29,6 +29,7 @@
             </div>
         %endif
     </div>
+
 
     <!-- %if disqus_forum: -->
     <!--     <script type="text/javascript"> -->

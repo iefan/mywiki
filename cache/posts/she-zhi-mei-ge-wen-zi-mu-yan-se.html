@@ -1,0 +1,24 @@
+<p>关于设置网站英文名字的每个单词首字母大写，也查了不少资料。最后在 <a class="reference external" href="http://www.sitepoint.com/forums/showthread.php?780836-CSS-Target-the-First-Letter-of-Every-Word">这儿</a> 找到了答案。</p>
+<!-- TEASER_END -->
+<ol class="arabic">
+<li><p class="first">写下列 <tt class="docutils literal">js</tt> 代码:</p>
+<pre class="literal-block">
+window.onload = function(){
+  var elements = document.getElementsByClassName(&quot;each-word&quot;)
+  for (var i=0; i&lt;elements.length; i++){
+    elements[i].innerHTML = elements[i].innerHTML.replace(/\b([a-z])([a-z]+)?\b/gim, &quot;&lt;span class='first-letter'&gt;$1&lt;/span&gt;$2&quot;)
+  }
+}
+</pre>
+</li>
+<li><p class="first">在css中定义如下:</p>
+<pre class="literal-block">
+&lt;style&gt;
+  .first-letter {
+    color: red;
+  }
+&lt;/style&gt;
+&lt;p class=&quot;each-word&quot;&gt;First letter of every word is now red!&lt;/p&gt;
+</pre>
+</li>
+</ol>

@@ -8,6 +8,7 @@ AUTHOR URI: http://scottwallick.com/
 TAGS: variable width, fixed width, variable columns, two columns, three columns, widgets, theme options, options page, white, gray, typography, microformats, hatom, hcard
 */
 .post_title{font-size:24px;margin:20px 0 0 0;text-shadow:2px 2px 5px #ccc;}.post_title a{text-decoration:none;}.post_title .icon{background-position:100px 100px;}
+.first-letter{color:blue; font-size:36px;font-family:Helvetica;}
 body {margin:0; padding:0;background-color: #f5f5d5 ; font-family: Georgia, serif; letter-spacing: -0.01em; word-spacing:0.2em; color:#111111; width:98%;}
 #wrapper p{line-height:160%;}
 body h1,body h2,body h3{font-family:Tahoma, Verdana, sTHeiTi, simsun, sans-serif;font-weight:400;}
