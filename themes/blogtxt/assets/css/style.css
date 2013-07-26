@@ -24,7 +24,7 @@ div#header a:hover{color:#9aa1ae;}
 div#footer a:hover{border-bottom: 1px solid #34425b;color: #34425b;}
 div.hfeed a:hover,div.hfeed .entry-title a:hover,div.hfeed div.entry-meta a:hover,div.sidebar a:hover,div.entry-content ul.xoxo li.hentry span a:hover{border-bottom:1px solid #0d1117;color:#0d1117;}
 div.hfeed a:active,div.sidebar a:active{color:#677284;border-bottom:1px solid #b4b9c3;}
-body{background:#fff;color:#222;line-height:140%;margin:0 0 2em;padding:0;}
+body{background:#fff;color:#222;line-height:140%;margin:0 0 2em;padding:0;background-image: url(../images/bg.jpg);}
 body abbr.published,body abbr.comment-published{border:none;}
 body img{border:none;max-width:99%;}
 body input#s{background:#f6f6f7;border:1px solid #9ca1a8;font-size:1em;line-height:normal;padding:0.3em 0.2em;}
@@ -53,6 +53,10 @@ div.comments ol.commentlist li .fn,div.sidebar ul li#blogtxt-recent-comments .fn
 div.comments ol.commentlist p{margin:0.5em 0;}
 div.comments ol.commentlist span.comment-meta,div.comments p#loggedin{font-style:italic;}
 div.comments span.req-field{color:#c00;}
+
+div.entry-content .section h2 {font-size:22px;font-weight:bold;margin:20px 0 20px 0 ! important; color:#000;text-shadow:1px 1px 1px #999;}
+div.entry-content .section h2 tt{font-size:22px;font-weight:bold;margin:20px 0 20px 0 ! important; color:#000 !important; margin:0 -10px 10px 0 ! important; padding:2px 10px 2px 10px ! important; background-color:#fff ! important;}
+
 div.entry-content .alignleft{float:left;margin:0.5em 1em 0.5em 0;}
 div.entry-content .alignright{float:right;margin:0.5em 0 0.5em 1em;}
 div.entry-content .center,div.entry-content .aligncenter{display:block;margin:1em auto;}

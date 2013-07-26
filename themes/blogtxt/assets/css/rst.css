@@ -239,17 +239,29 @@ pre.address {
     font: inherit }
 
 pre.literal-block, pre.doctest-block {
-    margin-left: 2em ;
-    margin-right: 2em;
-    background-color:#e0dfcc;
-	padding:0.5em;
-	font-family: 'Courier New', Courier, monospace;
+    font-family:  Courier New, monospace ! important;
+    font-size: 15px ! important;
+    /* background-color: transparent; */
+    width: 97% ! important;
+    overflow: visible;/* auto; */
+    margin-left: 5px ! important;
+    padding: 1px 20px ! important; /* adds a little border on top when controls are hidden */
+    word-break: break-all;
+    word-wrap: break-word;
+
+    /* margin-left: 2em ; */
+    /* margin-right: 2em; */
+    color:#ffffff ! important;
+    background-color:#406070;
+	/* padding:0.5em; */
+	/* font-family: 'Courier New', Courier, monospace; */
 	-moz-border-radius: 6px; /* FF1+ */
 	-webkit-border-radius:6px; /* Saf3+, Chrome */
     border-radius: 6px;
 }
 .literal{
-    background-color:#e0dfcc;
+    background-color:#666;
+    color:#ff3 ! important;
 	padding:1px;
 	margin:1px 1px;
 	font-family: 'Courier New', Courier, monospace;
