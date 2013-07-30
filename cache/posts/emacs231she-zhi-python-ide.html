@@ -1,0 +1,71 @@
+<p><strong>在ubuntu11.10中设置emacs23.1的python自动提示功能。</strong></p>
+<div class="section" id="yasnippet">
+<h2>1. 安装YASNIPPET</h2>
+<!-- TEASER_END -->
+<p>将 <tt class="docutils literal">YASnippet</tt> 下载后，放入 <tt class="docutils literal"><span class="pre">~/.emacs.d/plugins</span></tt> 文件夹下，如果不有这个文件夹，新建一个。
+在 <tt class="docutils literal"><span class="pre">~/.emacs</span></tt> 文件中写入以下两句:</p>
+<pre class="literal-block">
+(add-to-list ‘load-path “~/.emacs.d/plugins”)
+(require ‘yasnippet-bundle) 即可，在输入某关键字后，可按tab键进行补全。
+</pre>
+</div>
+<div class="section" id="auto-complete">
+<h2>2. 安装AUTO-COMPLETE</h2>
+<p>下载 <tt class="docutils literal"><span class="pre">auto-complete-1.3.1.tar.bz2</span></tt>，并解压，在当前打开的 <tt class="docutils literal">emacs</tt> 窗口中，运行 <tt class="docutils literal"><span class="pre">M-x</span> <span class="pre">load-file</span> RET</tt> ，输入解压文件路径到达 <tt class="docutils literal">etc/install.el</tt>，回车即可看到安装的默认目录为 <tt class="docutils literal"><span class="pre">~/.emacs.d/</span></tt> ，再回车， 即可看到安装完成字样，按屏幕提示，修改 <tt class="docutils literal"><span class="pre">~/.emacs</span></tt> 文件即可。重启 <tt class="docutils literal">emacs</tt> 即生效。</p>
+</div>
+<div class="section" id="rope-ropemacs">
+<h2>3. 安装ROPE, ROPEMACS</h2>
+<div class="section" id="rope">
+<h3>3.1 安装rope</h3>
+<pre class="literal-block">
+sudo python setup.py install
+</pre>
+</div>
+<div class="section" id="pymacs">
+<h3>3.2 安装pymacs</h3>
+<p>将 <tt class="docutils literal">pymacs</tt> 下的两个文件中添加 <tt class="docutils literal"><span class="pre">PYTHON3=&quot;&quot;</span></tt>。</p>
+<p>需要说明的是，在安装过程中，提示缺少 <tt class="docutils literal">Pymacs.py</tt> ，可以将文件夹下的 <tt class="docutils literal">Pymacs.py.in</tt> 改名即可成功安装。</p>
+<pre class="literal-block">
+sudo python setup.py install
+</pre>
+<p>或者，再在所解压的文件夹目录下运行:</p>
+<pre class="literal-block">
+sudo make install
+</pre>
+<p>即可安装。</p>
+</div>
+<div class="section" id="ropemacs">
+<h3>3.3 安装ropemacs</h3>
+<p>下载 <tt class="docutils literal">ropemode</tt> 和 <tt class="docutils literal">ropemacs</tt> ，安装 <tt class="docutils literal">ropemode</tt> 后，再安装 <tt class="docutils literal">ropemacs</tt> ，后者提示缺少 <tt class="docutils literal">ropemode</tt> 文件夹， 将前者的 <tt class="docutils literal">ropemode</tt> 复制后，则安装成功。</p>
+</div>
+<div class="section" id="emacs">
+<h3>3.4 后在.emacs中添加一些代码：</h3>
+<pre class="literal-block">
+;;设置python-mode
+(setq auto-mode-alist (cons ‘(“\\.py$” . python-mode) auto-mode-alist))
+(autoload ‘python-mode “python-mode” “Python editing mode.” t)
+(setq interpreter-mode-alist(cons ‘(“python” . python-mode)
+interpreter-mode-alist))
+(setq py-python-command “python”)
+
+;设置pymacs
+(autoload ‘pymacs-apply “pymacs”)
+(autoload ‘pymacs-call “pymacs”)
+(autoload ‘pymacs-eval “pymacs” nil t)
+(autoload ‘pymacs-exec “pymacs” nil t)
+(autoload ‘pymacs-load “pymacs” nil t)
+
+;;加载pycomplete.el
+(require ‘pycomplete)
+
+;设置ropemacs
+(require ‘pymacs)
+(pymacs-load “ropemacs” “rope-”)
+(setq ropemacs-enable-autoimport ‘t);打开自动导入
+</pre>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>4. 注意</h2>
+<p>要将 <tt class="docutils literal">pycomplete.py</tt> 放入 <tt class="docutils literal"><span class="pre">/usr/lib/python2.7/dist-packages</span></tt> 这时会要求替换，用 <tt class="docutils literal">sudo</tt> 替换之，即可。 查看 <a class="reference external" href="http://www.rwdev.eu/articles/emacspyeng">这个网页</a> 即可找到正确的 <tt class="docutils literal">pycomplete.el</tt> 。</p>
+</div>
