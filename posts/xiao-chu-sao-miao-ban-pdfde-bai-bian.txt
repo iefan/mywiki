@@ -1,0 +1,20 @@
+.. link:
+.. description:
+.. tags: pdf,windows
+.. date: 2013/08/01 16:37:32
+.. title: 消除扫描版pdf的白边
+.. slug: xiao-chu-sao-miao-ban-pdfde-bai-bian
+
+**关于如何消除pdf的白边问题结论（本文仅在 *windows* 系统下试验）**
+
+对于某些扫描版的pdf文件而言，如何消除其多余的白边，网上有很多方法，本文简单总结如下：
+
+.. TEASER_END
+
+1. 将扫描版pdf书转为图片用 `Ap PDF To Image Converter <http://en.kioskea.net/download/download-3296-ap-pdf-to-image-converter>`_ 比较好用。
+
+2. 在转换出来的图片中找到需要打印的放在一个文件夹中。
+
+3. 将收集好的图片用 `freepic2pdf <http://www.comicer.com/stronghorse/software/index.htm#FreePic2Pdf>`_ 转换为 *pdf* 文件（本文测试中发现转换的文件较大，初步估计是在将pdf转为图片的时候，图片文件过大所致。）
+
+4. 用 `bress <http://sourceforge.net/projects/briss/>`_ 打开转换好的pdf文件，根据需要将白边 ``crop`` ，再生成 *pdf* 即可。
