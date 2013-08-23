@@ -54,7 +54,7 @@ div.comments ol.commentlist p{margin:0.5em 0;}
 div.comments ol.commentlist span.comment-meta,div.comments p#loggedin{font-style:italic;}
 div.comments span.req-field{color:#c00;}
 
-div.entry-content .section h2 {font-size:24px;font-weight:bold;font-style:italic;margin:30px 0 20px 0 ! important; color:#06f;} /* text-shadow:0px 1px 0px #999;} */
+div.entry-content .section h2 {font-size:22px;font-weight:bold;margin:30px 0 20px 0 ! important; color:#000;} /* text-shadow:0px 1px 0px #999;} */
 div.entry-content .section h2 tt{font-size:22px;font-weight:bold;margin:20px 0 20px 0 ! important; color:#000 !important; margin:0 -10px 10px 0 ! important; padding:2px 10px 2px 10px ! important; background-color:#fff ! important;}
 
 div.entry-content .alignleft{float:left;margin:0.5em 1em 0.5em 0;}

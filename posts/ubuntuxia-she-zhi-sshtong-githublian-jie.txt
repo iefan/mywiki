@@ -1,0 +1,112 @@
+.. link:
+.. description:
+.. tags: Ubuntu,github
+.. date: 2013/08/23 16:20:02
+.. title: Ubuntu下设置ssh同github连接
+.. slug: ubuntuxia-she-zhi-sshtong-githublian-jie
+
+**关于Ubuntu上的git操作**
+
+.. TEASER_END
+
+1. 安装git:
+==============
+
+  ::
+
+     sudo apt-get install git
+     sudo apt-get install openssh-server (该步骤或者可以不要)
+
+2. github.com上的操作
+========================
+
+   在github.com上注册帐号，创建一个respository，如gamenet
+
+3. ssh的配置
+=================
+
+  在命令窗口执行以下命令： ::
+
+    ssh -T git@github.com
+
+  正常情况会显示：::
+
+    Permission denied (publickey).
+
+  如果显示以上条目，则需要创建openssh公钥/私钥对::
+
+    ssh-keygen -C "mybsppp@gmail.com" -f ~/.ssh/github
+
+4. 在github.com上设置ssh-key
+=================================
+
+   进入 ``account setting—>ssh keys``  将之前创建的 ``~/.ssh/github.pub`` 用文本文件打开复制添加进 ``ssh keys`` 中。
+
+5. 继续测试ssh连接
+=======================
+
+  在命令窗口: ::
+
+    ssh -T git@github.com
+
+  正常应该显示：::
+
+    Hi github! You've successfully authenticated, but GitHub does not provide shell access.
+
+  如果显示::
+
+    Agent admitted failure to sign using the key
+
+  则执行::
+
+    ssh-keygen -t rsa
+
+  在 ``~/.ssh/`` 文件夹下生成了2个文件，一个公钥和一个私钥文件， ``id_rsa`` 和  ``id_rsa.pub`` ，然后执行::
+
+    cp  ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
+
+  这样配置之后就可以实现无密码登录本机。如果需要登录到远程主机，只需要将 ``authorized_keys`` 文件发送到远程主机的 ``～/.ssh/`` 目录下。
+
+  使用 ``ssh-add`` 指令将私钥加进来::
+
+    ssh-add   ~/.ssh/id_rsa
+
+  注意，是要将 ``id_rsa.pub`` 的密钥复制到 ``github.com`` 上。
+
+
+6. 进行版本控制
+====================
+
+ (1) 从服务器下载代码
+
+    ::
+
+      cd ~/work
+      mkdir gameinfo
+      cd gameinfo
+      git clone git@github.com:iefan/gamenet.git
+
+ (2) 进行开发，完成后提交，提交前的准备工作
+
+    ::
+
+      cd gamenet
+      git add . //往暂存区域添加已添加和修改的文件，不处理删除的文件
+      git status //比较本地数据目录与暂存区域的变化
+      git commit -m "commit directions" //提到代码到本地数据目录，并添加提交说明
+
+ (3) 冲突修正
+
+     有可能你和其他人改的是同一个文件，那么冲突的情况是在所难免的，在提交之后再获取一下代码，就会提示代码冲突的文件，处理这些冲突，并再次提交：
+
+    ::
+
+       git pull //更新代码 根据提示修改冲突文件中的代码
+       git add .
+       git commit -m "commit directions"
+
+ (4) 正式推送
+
+    ::
+
+       git push

@@ -1,0 +1,116 @@
+<p><strong>关于Ubuntu上的git操作</strong></p>
+<!-- TEASER_END -->
+<div class="section" id="git">
+<h2>1. 安装git:</h2>
+<blockquote>
+<pre class="literal-block">
+sudo apt-get install git
+sudo apt-get install openssh-server (该步骤或者可以不要)
+</pre>
+</blockquote>
+</div>
+<div class="section" id="github-com">
+<h2>2. github.com上的操作</h2>
+<blockquote>
+在github.com上注册帐号，创建一个respository，如gamenet</blockquote>
+</div>
+<div class="section" id="ssh">
+<h2>3. ssh的配置</h2>
+<blockquote>
+<p>在命令窗口执行以下命令：</p>
+<pre class="literal-block">
+ssh -T git&#64;github.com
+</pre>
+<p>正常情况会显示：:</p>
+<pre class="literal-block">
+Permission denied (publickey).
+</pre>
+<p>如果显示以上条目，则需要创建openssh公钥/私钥对:</p>
+<pre class="literal-block">
+ssh-keygen -C &quot;mybsppp&#64;gmail.com&quot; -f ~/.ssh/github
+</pre>
+</blockquote>
+</div>
+<div class="section" id="github-comssh-key">
+<h2>4. 在github.com上设置ssh-key</h2>
+<blockquote>
+进入 <tt class="docutils literal">account <span class="pre">setting—&gt;ssh</span> keys</tt>  将之前创建的 <tt class="docutils literal"><span class="pre">~/.ssh/github.pub</span></tt> 用文本文件打开复制添加进 <tt class="docutils literal">ssh keys</tt> 中。</blockquote>
+</div>
+<div class="section" id="id1">
+<h2>5. 继续测试ssh连接</h2>
+<blockquote>
+<p>在命令窗口:</p>
+<pre class="literal-block">
+ssh -T git&#64;github.com
+</pre>
+<p>正常应该显示：:</p>
+<pre class="literal-block">
+Hi github! You've successfully authenticated, but GitHub does not provide shell access.
+</pre>
+<p>如果显示:</p>
+<pre class="literal-block">
+Agent admitted failure to sign using the key
+</pre>
+<p>则执行:</p>
+<pre class="literal-block">
+ssh-keygen -t rsa
+</pre>
+<p>在 <tt class="docutils literal"><span class="pre">~/.ssh/</span></tt> 文件夹下生成了2个文件，一个公钥和一个私钥文件， <tt class="docutils literal">id_rsa</tt> 和  <tt class="docutils literal">id_rsa.pub</tt> ，然后执行:</p>
+<pre class="literal-block">
+cp  ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
+</pre>
+<p>这样配置之后就可以实现无密码登录本机。如果需要登录到远程主机，只需要将 <tt class="docutils literal">authorized_keys</tt> 文件发送到远程主机的 <tt class="docutils literal"><span class="pre">～/.ssh/</span></tt> 目录下。</p>
+<p>使用 <tt class="docutils literal"><span class="pre">ssh-add</span></tt> 指令将私钥加进来:</p>
+<pre class="literal-block">
+ssh-add   ~/.ssh/id_rsa
+</pre>
+<p>注意，是要将 <tt class="docutils literal">id_rsa.pub</tt> 的密钥复制到 <tt class="docutils literal">github.com</tt> 上。</p>
+</blockquote>
+</div>
+<div class="section" id="id2">
+<h2>6. 进行版本控制</h2>
+<blockquote>
+<ol class="arabic simple">
+<li>从服务器下载代码</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+cd ~/work
+mkdir gameinfo
+cd gameinfo
+git clone git&#64;github.com:iefan/gamenet.git
+</pre>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>进行开发，完成后提交，提交前的准备工作</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+cd gamenet
+git add . //往暂存区域添加已添加和修改的文件，不处理删除的文件
+git status //比较本地数据目录与暂存区域的变化
+git commit -m &quot;commit directions&quot; //提到代码到本地数据目录，并添加提交说明
+</pre>
+</blockquote>
+<ol class="arabic" start="3">
+<li><p class="first">冲突修正</p>
+<p>有可能你和其他人改的是同一个文件，那么冲突的情况是在所难免的，在提交之后再获取一下代码，就会提示代码冲突的文件，处理这些冲突，并再次提交：</p>
+</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+git pull //更新代码 根据提示修改冲突文件中的代码
+git add .
+git commit -m &quot;commit directions&quot;
+</pre>
+</blockquote>
+<ol class="arabic simple" start="4">
+<li>正式推送</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+git push
+</pre>
+</blockquote>
+</blockquote>
+</div>
