@@ -4,9 +4,9 @@ UNDEFINED = runtime.UNDEFINED
 __M_dict_builtin = dict
 __M_locals_builtin = locals
 _magic_number = 8
-_modified_time = 1373936473.573
+_modified_time = 1377243007.941783
 _enable_loop = True
-_template_filename = u'themes\\blogtxt\\templates/post.tmpl'
+_template_filename = u'themes/blogtxt/templates/post.tmpl'
 _template_uri = u'post.tmpl'
 _source_encoding = 'utf-8'
 _exports = [u'content']
@@ -46,7 +46,7 @@ def render_body(context,**pageargs):
             context['self'].content(**pageargs)
         
 
-        # SOURCE LINE 44
+        # SOURCE LINE 46
         __M_writer(u'\n')
         return ''
     finally:
@@ -73,62 +73,62 @@ def render_content(context,**pageargs):
         __M_writer(u'\n    <div id="post-')
         # SOURCE LINE 4
         __M_writer(unicode(post.pagenames[lang]))
-        __M_writer(u'" class="post">\n      <h2 class="entry-title"><a href=\'')
+        __M_writer(u'" class="post">\n      <h2  class="post_title" align="center"><a href=\'')
         # SOURCE LINE 5
         __M_writer(unicode(permalink))
         __M_writer(u"'>")
         __M_writer(unicode(title))
-        __M_writer(u'</a></h2>\n        <div class="entry-content" >\n            ')
-        # SOURCE LINE 7
-        __M_writer(unicode(post.text(lang)))
-        __M_writer(u'\n        </div>\n        <div class="archive-meta">\n')
-        # SOURCE LINE 10
+        __M_writer(u'</a></h2>\n      <br/>\n        <div class="archive-meta" align="center">\n          <span class="meta-sep">|</span>\n')
+        # SOURCE LINE 9
         if link:
-            # SOURCE LINE 11
+            # SOURCE LINE 10
             __M_writer(u"                    <p><a href='")
             __M_writer(unicode(link))
             __M_writer(u"'>")
             __M_writer(unicode(messages[lang]["Original site"]))
             __M_writer(u'</a></p>\n                    <span class="meta-sep">|</span>\n')
-        # SOURCE LINE 14
+        # SOURCE LINE 13
         __M_writer(u'            ')
         __M_writer(unicode(messages[lang]["Posted"]))
         __M_writer(u': ')
         __M_writer(unicode(post.date))
-        __M_writer(u'<span class="meta-sep">|</span>\n            <span class="meta-sep">|</span>\n')
-        # SOURCE LINE 16
+        __M_writer(u'<span class="meta-sep">|</span>\n            <!-- <span class="meta-sep">|</span> -->\n')
+        # SOURCE LINE 15
         if len(translations) > 1:
-            # SOURCE LINE 17
+            # SOURCE LINE 16
             for langname in translations.keys():
-                # SOURCE LINE 18
+                # SOURCE LINE 17
                 if langname != lang:
-                    # SOURCE LINE 19
+                    # SOURCE LINE 18
                     __M_writer(u'                        <a href="')
                     __M_writer(unicode(post.permalink(langname)))
                     __M_writer(u'">')
                     __M_writer(unicode(messages[langname][u"Read in english"]))
                     __M_writer(u'</a>\n                        <span class="meta-sep">|</span>\n')
-        # SOURCE LINE 24
+        # SOURCE LINE 23
         __M_writer(u'            <a href="')
         __M_writer(unicode(post.pagenames[lang]+".txt"))
         __M_writer(u'">reSt</a>\n            <span class="meta-sep">|</span>\n')
-        # SOURCE LINE 26
+        # SOURCE LINE 25
         for tag in post.tags:
-            # SOURCE LINE 27
+            # SOURCE LINE 26
             __M_writer(u'                    <a href="')
             __M_writer(unicode(_link("tag", tag, lang)))
             __M_writer(u'"><span class="badge badge-info">')
             __M_writer(unicode(tag))
             __M_writer(u'</span></a>\n')
-        # SOURCE LINE 29
-        __M_writer(u'            <span class="entry-tags">\n            </span>\n        </div>\n    </div>\n    <!-- %if disqus_forum: -->\n    <!--     <\\!-- Disqus comments !-\\-> -->\n    <!--     <script type="text/javascript"> -->\n    <!--         var disqus_url = \'')
-        # SOURCE LINE 36
+        # SOURCE LINE 28
+        __M_writer(u'            <span class="entry-tags">\n            </span>\n        </div>\n        <div class="entry-content" >\n            ')
+        # SOURCE LINE 32
+        __M_writer(unicode(post.text(lang)))
+        __M_writer(u'\n        </div>\n    </div>\n    <!-- %if disqus_forum: -->\n    <!--     <\\!-- Disqus comments !-\\-> -->\n    <!--     <script type="text/javascript"> -->\n    <!--         var disqus_url = \'')
+        # SOURCE LINE 38
         __M_writer(unicode(post.permalink(absolute=True)))
         __M_writer(u'\'; -->\n    <!--         var disqus_developer = 1; -->\n    <!--     </script> -->\n    <!--     <div id="disqus_thread"></div> -->\n    <!--     <script type="text/javascript" src="http://disqus.com/forums/')
-        # SOURCE LINE 40
+        # SOURCE LINE 42
         __M_writer(unicode(disqus_forum))
         __M_writer(u'/embed.js"></script> -->\n    <!--     <noscript><a href="http://disqus.com/forums/')
-        # SOURCE LINE 41
+        # SOURCE LINE 43
         __M_writer(unicode(disqus_forum))
         __M_writer(u'/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a> -->\n    <!--     <\\!-- End of Disqus comments !-\\-> -->\n    <!-- %endif -->\n')
         return ''

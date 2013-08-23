@@ -180,7 +180,7 @@ post_compilers = {
 # to the location of conf.py
 # OUTPUT_FOLDER = 'output'
 # OUTPUT_FOLDER = r'D:/workdb/iefan.github.io'
-OUTPUT_FOLDER = r'/home/iefan/work/iefan.github.io'
+OUTPUT_FOLDER = r'../iefan.github.io'
 
 
 # where the "cache" of partial generated content should be located

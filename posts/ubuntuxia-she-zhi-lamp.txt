@@ -1,0 +1,70 @@
+.. link:
+.. description:
+.. tags: ubuntu,php
+.. date: 2012/02/14 15:10:07
+.. title: Ubuntu下设置LAMP
+.. slug: ubuntuxia-she-zhi-lamp
+
+**在ubuntu下，设置虚拟站点的一些步骤说明：**
+
+.. TEASER_END
+
+1. 安装lamp
+--------------------
+
+  采用 tasksel 工具来安装，即首先安装tasksel，后用如下命令可安装／删除lamp::
+
+    sudo tasksel install lamp-server ;即可安装lamp
+    sudo tasksel remove lamp-server ;删除
+
+2. 转移mysql的data目录至/home/mysql
+-----------------------------------------
+
+   (1) ``$sudo /etc/init.d/mysql stop``
+   (2) ``$sudo cp –R –p /var/lib/mysql /home/mysql``
+   (3) 编辑MySQL配置文件
+
+     ::
+
+         $sudo vi /etc/mysql/my.cnf
+
+     找到 ``datadir`` 这一行，将后面等于号之后的内容更改为 ``/home/mysql`` 然后保存退出。
+
+   (4) 自Ubuntu 7.10开始， **Ubuntu** 就开始使用一种安全软件叫做 ``AppArmor`` ，这个安全软件会在你的文件系统中创建一个允许应用程序访问的区域(专业术语：应用程序访问控制)。如果不为 ``MySQL`` 修改 ``AppArmor`` 配置文件，永远也无法为新设置的数据库存储位置启动数据库服务。 **配置 ``AppArmor``**
+
+     ::
+
+         $sudo vi /etc/apparmor.d/usr.sbin.mysqld
+
+     找到 ``/var/lib/mysql/`` 这两行，注释掉这两行，在这两行前分别添加一个符号 ``“#”`` 即可注释，在这两行之前或之后加上下面内容::
+
+       /home/mysql/ r,
+       /home/mysql/** rwk,
+
+     保存后退出，执行命令：::
+
+       $sudo /etc/init.d/apparmor reload  返回Reloading AppArmor profiles : done.
+
+     即可以重启MySQL服务：::
+
+       $sudo /etc/init.d/mysql start
+
+3. 安装Smarty
+--------------------
+
+  下载smarty最新版，解压，将其中libs目录放入虚拟目录的相对位置，本次测试放在/var/www/Smarty_3_1_7下。可以其中demo为模板进行开发。
+
+4. 权限设置说明：
+--------------------
+
+  (1) 设置 ``/var/www`` 权限： ``sudo chmod 777 www`` ;
+  (2) 设置 ``/var/www/papersystem`` 权限： ``sudo chmod 775 papersystem`` ; papersystem为某项目文件夹
+  (3) 在papersystem中采用了 **smarty** ，故存在有 ``templates`` 和 ``templates_c`` 两个文件夹，须将这两个文件夹权限设置为777：::
+
+        sudo chmod 777 templates || sudo chmod 777 templates_c
+
+  (4) 将papersystem中其它文件夹权限设置为 **775**
+  (5) 将papersystem中的单个文件权限可设置为 **664**
+  (6) 如果需要phpMyAdmin, 则需要将其权限设置为 **755** ， **777** 的权限会提示服务器错误::
+
+        sudo chmod -R 755 phpMyAdmin
