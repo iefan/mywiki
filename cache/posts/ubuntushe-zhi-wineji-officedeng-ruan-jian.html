@@ -1,0 +1,44 @@
+<p><strong>在Ubuntu下设置wine及常用windows软件的一些说明</strong></p>
+<ol class="arabic simple">
+<li>ubuntu 13.04以后使用add-apt-repository依赖software-properties-common</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+sudo apt-get install software-properties-common
+</pre>
+</blockquote>
+<!-- TEASER_END -->
+<ol class="arabic simple" start="2">
+<li>安装 <cite>wine</cite></li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+sudo add-apt-repository ppa:ubuntu-wine/ppa
+sudo apt-get update
+sudo apt-get install wine1.6 winetricks
+</pre>
+</blockquote>
+<ol class="arabic simple" start="3">
+<li>卸载永中office</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+sudo dpkg -P yozo-office-zh-cn
+</pre>
+</blockquote>
+<ol class="arabic simple" start="4">
+<li>下载 <cite>msoffice_11.6568.5606-2_all.deb</cite></li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+sudo dpkg -i msoffice_11.6568.5606-2_all.deb
+</pre>
+</blockquote>
+<ol class="arabic simple" start="5">
+<li>在第2步之后，如果无法安装所下载的deb包，则运行如下命令即可</li>
+</ol>
+<blockquote>
+<pre class="literal-block">
+sudo apt-get -f install
+</pre>
+</blockquote>
