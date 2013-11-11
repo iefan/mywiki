@@ -1,0 +1,94 @@
+<p>本文中所示例子中主要功能为，当调用主页时，显示 <cite>Fibonacci</cite> 数列，当在显示区域点击时，页面不用刷新，直接在当前列表中继续添加数列的后续部分。</p>
+<div class="section" id="id1">
+<h2>一、建立工程(本文所述采用1.5.5版本)</h2>
+<pre class="literal-block">
+django-admin.py startproject ajaxapp
+</pre>
+<p>在创建工程后，需要在 <cite>setting.py</cite> 中将 <cite>TEMPLATE_DIRS</cite> 设置如下：</p>
+<pre class="literal-block">
+os.path.join(os.path.dirname(__file__) , 'templates').replace('\\','/')
+</pre>
+<p>在 <cite>ajaxapp/ajaxapp</cite> 目录下创建 <cite>templates</cite> 文件夹。</p>
+</div>
+<div class="section" id="urls-py">
+<h2>二、在 <cite>urls.py</cite> 中路由部分写入如下代码</h2>
+<pre class="literal-block">
+(r'^$', 'ajaxapp.views.index'),
+(r'^refresh', 'ajaxapp.views.refresh'),
+</pre>
+</div>
+<div class="section" id="views-py">
+<h2>三、在视图 <cite>views.py</cite> 中写入如下两个函数</h2>
+<pre class="literal-block">
+from django.shortcuts import render_to_response
+
+FIB = [0,1]
+
+def get_fib_sequence():
+    global FIB
+    FIB.append(FIB[-1] + FIB[-2])
+    return FIB
+
+def index(request):
+    global FIB
+    FIB = [0,1]
+    print FIB
+    return render_to_response(&quot;index.html&quot;,
+                              { 'fib_sequence' : [0,1] }
+                              )
+
+def refresh(request):
+    fib_sequence = get_fib_sequence()
+    return render_to_response(&quot;fib.html&quot;,
+                              { 'fib_sequence' : fib_sequence }
+                              )
+</pre>
+</div>
+<div class="section" id="templates">
+<h2>四、在 <cite>templates</cite> 中创建以下三个文件</h2>
+<p><cite>base.html</cite></p>
+<pre class="literal-block">
+&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&gt;
+&lt;html lang=&quot;zh&quot;&gt;
+  &lt;head&gt;
+    &lt;title&gt;ajax&lt;/title&gt;
+    &lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+
+    {% block content %}{% endblock %}
+
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p><cite>index.html</cite></p>
+<pre class="literal-block">
+{% extends 'base.html' %}
+
+{% block content %}
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+$(document).ready(function(){
+  $(&quot;#fib_div&quot;).click(function(){
+  $('#fib_div').load('refresh');
+  });
+});
+
+&lt;/script&gt;
+
+&lt;h1&gt; The Fibonacci Sequence &lt;/h1&gt;
+&lt;div id=&quot;fib_div&quot; onclick=&quot;update_fib();&quot;&gt;
+  {% include 'fib.html' %}
+&lt;/div&gt;
+{% endblock %}
+</pre>
+<p><cite>fib.html</cite></p>
+<pre class="literal-block">
+&lt;ul&gt;
+  {% for entry in fib_sequence %}
+  &lt;li&gt;{{ entry }}&lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+</div>

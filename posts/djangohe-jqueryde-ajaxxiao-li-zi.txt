@@ -1,0 +1,113 @@
+.. link:
+.. description:
+.. tags: django,jquery
+.. date: 2013/11/11 23:20:00
+.. title: django和jquery的ajax小例子
+.. slug: djangohe-jqueryde-ajaxxiao-li-zi
+
+本文中所示例子中主要功能为，当调用主页时，显示 `Fibonacci` 数列，当在显示区域点击时，页面不用刷新，直接在当前列表中继续添加数列的后续部分。
+
+一、建立工程(本文所述采用1.5.5版本)
+--------------------------------------
+
+::
+
+    django-admin.py startproject ajaxapp
+
+在创建工程后，需要在 `setting.py` 中将 `TEMPLATE_DIRS` 设置如下： ::
+
+    os.path.join(os.path.dirname(__file__) , 'templates').replace('\\','/')
+
+在 `ajaxapp/ajaxapp` 目录下创建 `templates` 文件夹。
+
+二、在 `urls.py` 中路由部分写入如下代码
+-------------------------------------------
+
+::
+
+    (r'^$', 'ajaxapp.views.index'),
+    (r'^refresh', 'ajaxapp.views.refresh'),
+
+三、在视图 `views.py` 中写入如下两个函数
+---------------------------------------------
+
+::
+
+    from django.shortcuts import render_to_response
+
+    FIB = [0,1]
+
+    def get_fib_sequence():
+        global FIB
+        FIB.append(FIB[-1] + FIB[-2])
+        return FIB
+
+    def index(request):
+        global FIB
+        FIB = [0,1]
+        print FIB
+        return render_to_response("index.html",
+                                  { 'fib_sequence' : [0,1] }
+                                  )
+
+    def refresh(request):
+        fib_sequence = get_fib_sequence()
+        return render_to_response("fib.html",
+                                  { 'fib_sequence' : fib_sequence }
+                                  )
+
+四、在 `templates` 中创建以下三个文件
+----------------------------------------
+
+`base.html`
+
+::
+
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+    <html lang="zh">
+      <head>
+        <title>ajax</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+      </head>
+
+      <body>
+
+        {% block content %}{% endblock %}
+
+      </body>
+    </html>
+
+
+`index.html`
+
+::
+
+    {% extends 'base.html' %}
+
+    {% block content %}
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+      $("#fib_div").click(function(){
+      $('#fib_div').load('refresh');
+      });
+    });
+
+    </script>
+
+    <h1> The Fibonacci Sequence </h1>
+    <div id="fib_div" onclick="update_fib();">
+      {% include 'fib.html' %}
+    </div>
+    {% endblock %}
+
+
+`fib.html`
+
+::
+
+    <ul>
+      {% for entry in fib_sequence %}
+      <li>{{ entry }}</li>
+      {% endfor %}
+    </ul>
